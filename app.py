@@ -8,11 +8,7 @@ import sys
 import os
 
 # Configuration de la page
-st.set_page_config(
-    page_title="Classification MNIST",
-    page_icon="🔢",
-    layout="wide"
-)
+st.set_page_config(page_title="Classification MNIST", page_icon="🔢", layout="wide")
 
 # Configuration de l'API
 API_BASE_URL = os.getenv("API_URL", "http://localhost:8000")
@@ -27,7 +23,8 @@ API_URL = os.getenv("API_URL", "http://localhost:8000/api/v1/predict")
 # Sidebar avec informations
 with st.sidebar:
     st.header("ℹ️ Informations")
-    st.markdown("""
+    st.markdown(
+        """
     Cette application utilise un réseau de neurones convolutionnel 
     pour classifier des images de chiffres manuscrits (0-9).
     
@@ -40,12 +37,15 @@ with st.sidebar:
     - Utilisez un trait assez épais
     - Centrez le chiffre dans le canvas
     - Dessinez en noir sur fond blanc
-    """)
-    
+    """
+    )
+
     st.markdown("---")
     st.markdown("**API Status**")
     try:
-        health_url = os.getenv("API_URL", "http://localhost:8000/api/v1/predict").replace("/api/v1/predict", "/")
+        health_url = os.getenv(
+            "API_URL", "http://localhost:8000/api/v1/predict"
+        ).replace("/api/v1/predict", "/")
         response = requests.get(health_url, timeout=2)
         if response.status_code == 200:
             st.success("🟢 API en ligne")
@@ -60,7 +60,7 @@ col1, col2 = st.columns([1, 1])
 
 with col1:
     st.header("✏️ Dessinez un chiffre")
-    
+
     # Canvas de dessin
     canvas_result = st_canvas(
         fill_color="rgba(255, 255, 255, 0.0)",  # Fond transparent
@@ -74,72 +74,69 @@ with col1:
         display_toolbar=True,
         key="canvas",
     )
-    
+
     # Bouton pour vider le canvas
     if st.button("🗑️ Effacer", help="Efface le dessin"):
         st.rerun()
-    
+
     drawn_image = None
     if canvas_result.image_data is not None:
         # Convertir en image PIL
         img_data = canvas_result.image_data
-        img = Image.fromarray(img_data.astype('uint8'), 'RGBA')
-        
+        img = Image.fromarray(img_data.astype("uint8"), "RGBA")
+
         # Convertir en niveaux de gris
-        img_gray = img.convert('L')
-        
+        img_gray = img.convert("L")
+
         # Redimensionner à 28x28
         img_resized = img_gray.resize((28, 28), Image.LANCZOS)
-        
+
         # Afficher le résultat redimensionné
         st.image(img_resized, caption="Votre dessin (28x28)", width=200)
-        
+
         drawn_image = img_resized
 
 with col2:
     st.header("🎯 Résultats de prédiction")
-    
+
     if drawn_image is not None:
         if st.button("🚀 Prédire", type="primary"):
             try:
                 # Convertir l'image en bytes
                 img_buffer = io.BytesIO()
-                drawn_image.save(img_buffer, format='PNG')
+                drawn_image.save(img_buffer, format="PNG")
                 img_bytes = img_buffer.getvalue()
-                
+
                 # Préparer la requête
                 files = {"file": img_bytes}
-                
+
                 with st.spinner("Prédiction en cours..."):
                     response = requests.post(API_URL, files=files, timeout=10)
-                
+
                 if response.status_code == 200:
                     result = response.json()
-                    
+
                     # Affichage des résultats
                     st.success("✅ Prédiction réussie!")
-                    
+
                     # Résultat principal
                     predicted_class = result["predicted_class"]
                     confidence = result["confidence"]
-                    
+
                     st.metric(
                         label="Chiffre prédit",
                         value=str(predicted_class),
-                        delta=f"Confiance: {confidence:.2%}"
+                        delta=f"Confiance: {confidence:.2%}",
                     )
-                    
+
                     # Graphique des probabilités
                     st.subheader("📊 Probabilités par classe")
                     probs = result["probabilities"]
-                    
-                    prob_data = {
-                        'Chiffre': list(range(10)),
-                        'Probabilité': probs
-                    }
-                    
-                    st.bar_chart(prob_data, x='Chiffre', y='Probabilité')
-                    
+
+                    prob_data = {"Chiffre": list(range(10)), "Probabilité": probs}
+
+                    st.bar_chart(prob_data, x="Chiffre", y="Probabilité")
+
                     # Tableau détaillé
                     with st.expander("📋 Détails des probabilités"):
                         for i, prob in enumerate(probs):
@@ -149,11 +146,11 @@ with col2:
                             with col_b:
                                 st.progress(prob)
                                 st.caption(f"{prob:.4f}")
-                
+
                 else:
                     st.error(f"❌ Erreur API: {response.status_code}")
                     st.json(response.json())
-                    
+
             except requests.exceptions.ConnectionError:
                 st.error("❌ Impossible de se connecter à l'API")
                 st.info("Assurez-vous que le serveur FastAPI est démarré")
@@ -169,6 +166,6 @@ st.markdown(
     <div style='text-align: center'>
         <p>🧠 Modèle: ConvNet | 🔧 FastAPI + Streamlit</p>
     </div>
-    """, 
-    unsafe_allow_html=True
-) 
+    """,
+    unsafe_allow_html=True,
+)
