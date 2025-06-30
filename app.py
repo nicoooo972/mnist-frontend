@@ -1,14 +1,16 @@
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import requests
-import numpy as np
 from PIL import Image
 import io
-import sys
 import os
 
 # Configuration de la page
-st.set_page_config(page_title="Classification MNIST", page_icon="🔢", layout="wide")
+st.set_page_config(
+    page_title="Classification MNIST",
+    page_icon="🔢",
+    layout="wide"
+)
 
 # Configuration de l'API
 API_BASE_URL = os.getenv("API_URL", "http://localhost:8000")
@@ -25,14 +27,14 @@ with st.sidebar:
     st.header("ℹ️ Informations")
     st.markdown(
         """
-    Cette application utilise un réseau de neurones convolutionnel 
+    Cette application utilise un réseau de neurones convolutionnel
     pour classifier des images de chiffres manuscrits (0-9).
-    
+
     **Instructions :**
     1. Dessinez un chiffre dans le canvas blanc
     2. Le dessin sera automatiquement redimensionné en 28x28 pixels
     3. Le modèle prédit le chiffre avec un score de confiance
-    
+
     **Conseils de dessin :**
     - Utilisez un trait assez épais
     - Centrez le chiffre dans le canvas
@@ -51,7 +53,7 @@ with st.sidebar:
             st.success("🟢 API en ligne")
         else:
             st.error("🔴 API inaccessible")
-    except:
+    except Exception:
         st.error("🔴 API non démarrée")
         st.markdown("Lancez d'abord : `uvicorn src.app.main:app --reload`")
 
@@ -133,7 +135,10 @@ with col2:
                     st.subheader("📊 Probabilités par classe")
                     probs = result["probabilities"]
 
-                    prob_data = {"Chiffre": list(range(10)), "Probabilité": probs}
+                    prob_data = {
+                        "Chiffre": list(range(10)),
+                        "Probabilité": probs
+                    }
 
                     st.bar_chart(prob_data, x="Chiffre", y="Probabilité")
 
@@ -153,11 +158,16 @@ with col2:
 
             except requests.exceptions.ConnectionError:
                 st.error("❌ Impossible de se connecter à l'API")
-                st.info("Assurez-vous que le serveur FastAPI est démarré")
+                st.info(
+                    "Assurez-vous que le serveur FastAPI est démarré"
+                )
             except Exception as e:
                 st.error(f"❌ Erreur: {str(e)}")
     else:
-        st.info("👆 Dessinez un chiffre dans le canvas pour commencer la prédiction")
+        st.info(
+            "👆 Dessinez un chiffre dans le canvas pour "
+            "commencer la prédiction"
+        )
 
 # Footer
 st.markdown("---")
