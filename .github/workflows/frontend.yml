@@ -1,0 +1,15 @@
+name: Frontend CI/CD
+on:
+  push: { branches: [main, develop] }
+  tags: ['v*']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Frontend
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/nicoooo972/mnist-frontend:${{ github.ref_name }}
