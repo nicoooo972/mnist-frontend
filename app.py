@@ -6,11 +6,7 @@ import io
 import os
 
 # Configuration de la page
-st.set_page_config(
-    page_title="Classification MNIST",
-    page_icon="🔢",
-    layout="wide"
-)
+st.set_page_config(page_title="Classification MNIST", page_icon="🔢", layout="wide")
 
 # Configuration de l'API
 API_BASE_URL = os.getenv("API_URL", "http://localhost:8000")
@@ -135,10 +131,7 @@ with col2:
                     st.subheader("📊 Probabilités par classe")
                     probs = result["probabilities"]
 
-                    prob_data = {
-                        "Chiffre": list(range(10)),
-                        "Probabilité": probs
-                    }
+                    prob_data = {"Chiffre": list(range(10)), "Probabilité": probs}
 
                     st.bar_chart(prob_data, x="Chiffre", y="Probabilité")
 
@@ -158,16 +151,11 @@ with col2:
 
             except requests.exceptions.ConnectionError:
                 st.error("❌ Impossible de se connecter à l'API")
-                st.info(
-                    "Assurez-vous que le serveur FastAPI est démarré"
-                )
+                st.info("Assurez-vous que le serveur FastAPI est démarré")
             except Exception as e:
                 st.error(f"❌ Erreur: {str(e)}")
     else:
-        st.info(
-            "👆 Dessinez un chiffre dans le canvas pour "
-            "commencer la prédiction"
-        )
+        st.info("👆 Dessinez un chiffre dans le canvas pour " "commencer la prédiction")
 
 # Footer
 st.markdown("---")
