@@ -21,7 +21,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier l'application Streamlit
-COPY src/app/streamlit_app.py ./
+COPY app.py ./
 
 # Configuration Streamlit
 ENV STREAMLIT_SERVER_PORT=8501
@@ -45,4 +45,4 @@ EXPOSE 8501
 ENV PYTHONUNBUFFERED=1
 
 # Commande pour lancer Streamlit
-CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"] 
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"] 
